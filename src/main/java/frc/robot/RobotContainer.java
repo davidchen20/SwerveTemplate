@@ -39,7 +39,7 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getLeftJoyY(), 
+                () -> driver.getLeftJoyY(), 
                 () -> -driver.getLeftJoyX(), 
                 () -> -driver.getRightJoyX(), 
                 () -> driver.getLBButton().getAsBoolean()
