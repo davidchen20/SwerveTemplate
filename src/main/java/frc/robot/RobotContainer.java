@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.wrappers.Controller;
 import frc.robot.autos.*;
@@ -20,6 +21,8 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Controller driver = new Controller(0, Constants.stickDeadband);
+    
+    public static final Intake intake = new Intake();
 
     /* Drive Controls */
     // private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -46,6 +49,8 @@ public class RobotContainer {
             )
         );
 
+        intake.setDefaultCommand(new RunCommand(intake::run, intake));
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -69,6 +74,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new TwoTwoSix(s_Swerve);
+        return new EventTest(s_Swerve);
     }
 }
