@@ -6,6 +6,11 @@ import frc.robot.subsystems.Swerve;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,12 +19,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class exampleAuto extends SequentialCommandGroup {
+    
     public exampleAuto(Swerve s_Swerve){
         TrajectoryConfig config =
             new TrajectoryConfig(
@@ -51,6 +58,11 @@ public class exampleAuto extends SequentialCommandGroup {
                 Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
+        var rotationController =
+            new PIDController(
+                Constants.AutoConstants.kPThetaController, 0, 0);
+        
+
         SwerveControllerCommand swerveControllerCommand_one =
             new SwerveControllerCommand(
                 t1,
@@ -61,23 +73,39 @@ public class exampleAuto extends SequentialCommandGroup {
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);
-        SwerveControllerCommand swerveControllerCommand_two =
-            new SwerveControllerCommand(
-                t2,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
+
+        PathPlannerTrajectory testPath = PathPlanner.loadPath("testPath", new PathConstraints(4, 3));
+        // SwerveControllerCommand ppp =
+        //     new SwerveControllerCommand(
+        //         testPath,
+        //         s_Swerve::getPose,
+        //         Constants.Swerve.swerveKinematics,
+        //         new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+        //         new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+        //         thetaController,
+        //         s_Swerve::setModuleStates,
+        //         s_Swerve);
+
+        PPSwerveControllerCommand ppp = new PPSwerveControllerCommand(
+                testPath, 
+                s_Swerve::getPose, // Pose supplier
+                Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
                 new PIDController(Constants.AutoConstants.kPXController, 0, 0),
                 new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
-
-        addCommands(
-            new InstantCommand(() -> s_Swerve.resetOdometry(tf.getInitialPose())),
-            swerveControllerCommand_one,
-            new WaitCommand(1),
-            swerveControllerCommand_two
-        );
+                rotationController,
+                s_Swerve::setModuleStates, // Module states consumer
+                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                s_Swerve // Requires this drive subsystem
+             );
+        
+                    
+        // Command path = Swerve.getInstance().followTrajectoryCommand(testPath, true);
+        // addCommands(
+        //     new InstantCommand(() -> s_Swerve.resetOdometry(tf.getInitialPose())),
+        //     swerveControllerCommand_one,
+        //     new WaitCommand(1),
+        //     swerveControllerCommand_two
+        // );
+        addCommands(new InstantCommand(() -> s_Swerve.resetOdometry(testPath.getInitialPose())), ppp);
     }
 }
