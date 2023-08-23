@@ -98,6 +98,8 @@ public class exampleAuto extends SequentialCommandGroup {
                 s_Swerve // Requires this drive subsystem
              );
         
+
+        PPSwerveControllerCommand test = s_Swerve.generateCommand(testPath);
                     
         // Command path = Swerve.getInstance().followTrajectoryCommand(testPath, true);
         // addCommands(

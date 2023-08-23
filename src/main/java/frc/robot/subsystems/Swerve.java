@@ -124,6 +124,20 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public PPSwerveControllerCommand generateCommand(PathPlannerTrajectory pathName) {
+        return new PPSwerveControllerCommand(
+            pathName, 
+            this::getPose, // Pose supplier
+            Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+            new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+            new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+            new PIDController(Constants.AutoConstants.kPThetaController, 0, 0),
+            this::setModuleStates, // Module states consumer
+            true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+            this // Requires this drive subsystem
+         );
+    }
+
     // public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
     //     return new SequentialCommandGroup(
     //          new InstantCommand(() -> {
