@@ -23,15 +23,9 @@ import frc.robot.subsystems.Swerve;
 public class TwoTwoSix extends SequentialCommandGroup {
   /** Creates a new TwoTwoSix. */
   public TwoTwoSix(Swerve s_Swerve) {
-    TrajectoryConfig config =
-    new TrajectoryConfig(
-            Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-            Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        .setKinematics(Constants.Swerve.swerveKinematics);
+  
         
-      var rotationController =
-      new PIDController(
-          Constants.AutoConstants.kPThetaController, 0, 0);
+    var rotationController = new PIDController(Constants.AutoConstants.kPThetaController, 0, 0);
 
     PathPlannerTrajectory two = PathPlanner.loadPath("2", new PathConstraints(4, 3));
     PathPlannerTrajectory six = PathPlanner.loadPath("6", new PathConstraints(4, 3));
@@ -49,7 +43,6 @@ public class TwoTwoSix extends SequentialCommandGroup {
              );
         
     // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     addCommands(new InstantCommand(() -> s_Swerve.resetOdometry(two.getInitialPose())), ppp);
   }
 }

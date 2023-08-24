@@ -138,28 +138,6 @@ public class Swerve extends SubsystemBase {
          );
     }
 
-    // public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-    //     return new SequentialCommandGroup(
-    //          new InstantCommand(() -> {
-    //            // Reset odometry for the first path you run during auto
-    //            if(isFirstPath){
-    //                this.resetOdometry(traj.getInitialHolonomicPose());
-    //            }
-    //          }),
-    //          new PPSwerveControllerCommand(
-    //              traj, 
-    //              this::getPose, // Pose supplier
-    //              Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-    //              new PIDController(10, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-    //              new PIDController(10, 0, 0), // Y controller (usually the same values as X controller)
-    //              new PIDController(1.7, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-    //              this::setModuleStates, // Module states consumer
-    //              true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-    //              this // Requires this drive subsystem
-    //          )
-    //      );
-    //  }
-
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  
