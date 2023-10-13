@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
+import frc.lib.wrappers.Limelight;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -54,7 +55,7 @@ public class Swerve extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
 
-        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions(), getPose());
+        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions(), getPose());;
     }
 
     public void control(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -90,6 +91,14 @@ public class Swerve extends SubsystemBase {
     public Pose2d getPose() {
         // return swerveOdometry.getPoseMeters();
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public void updateOdometry() {
+        
+        if (Limelight.getValue() == 1) {
+            // Pose2d limelightMeasurement = LimelightHelpers.getBotPose2d("limelight");
+            // poseEstimator.addVisionMeasurement(limelightMeasurement, Timer);
+        }
     }
 
     public void resetOdometry(Pose2d pose) {
