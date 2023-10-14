@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
-import frc.lib.wrappers.Limelight;
 import frc.robot.Constants;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -10,15 +9,21 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -94,15 +99,18 @@ public class Swerve extends SubsystemBase {
     }
 
     public void updateOdometry() {
-        
+        poseEstimator.update(getYaw(), getModulePositions());
+        Rotation3d rot3 = new Rotation3d(Units.degreesToRadians(Limelight.getBotPose()[3]), Units.degreesToRadians(Limelight.getBotPose()[4]), Units.degreesToRadians(Limelight.getBotPose()[5]));
+        Pose3d visionPose3 = new Pose3d(Limelight.getBotPose()[0], Limelight.getBotPose()[1], Limelight.getBotPose()[2], rot3);
+
         if (Limelight.getValue() == 1) {
-            // Pose2d limelightMeasurement = LimelightHelpers.getBotPose2d("limelight");
-            // poseEstimator.addVisionMeasurement(limelightMeasurement, Timer);
+            Pose2d limelightMeasurement = new Pose2d(visionPose3.getTranslation().toTranslation2d(), getYaw());
+            double timeStampSeconds =  Timer.getFPGATimestamp() - (Limelight.getTargetLatency()/1000.0) - (Limelight.getCaptureLatency()/1000.0);
+            poseEstimator.addVisionMeasurement(limelightMeasurement, timeStampSeconds);
         }
     }
 
     public void resetOdometry(Pose2d pose) {
-        // swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
         poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
@@ -171,10 +179,39 @@ public class Swerve extends SubsystemBase {
     //          )
     //      );
     //  }
+    public PathPlannerTrajectory generateTagTrajecotry() {
+        return PathPlanner.generatePath(
+            new PathConstraints(4, 3), 
+            new PathPoint(getPose().getTranslation(), getPose().getRotation()),
+            new PathPoint(new Translation2d(Limelight.getTargetPose()[0], Limelight.getTargetPose()[1]), new Rotation2d(Limelight.getTargetPose()[3]))
+        );
+    }
+
+    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+        return new SequentialCommandGroup(
+             new InstantCommand(() -> {
+               // Reset odometry for the first path you run during auto
+               if(isFirstPath){
+                   this.resetOdometry(traj.getInitialHolonomicPose());
+               }
+             }),
+             new PPSwerveControllerCommand(
+                 traj, 
+                 this::getPose, // Pose supplier
+                 Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+                 new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                 new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+                 new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                 this::setModuleStates, // Module states consumer
+                 true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                 this // Requires this drive subsystem
+             )
+         );
+     }
 
     @Override
     public void periodic(){
-        poseEstimator.update(getYaw(), getModulePositions());
+        updateOdometry();
         SmartDashboard.putNumber("gyro yaw", gyro.getYaw());
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());

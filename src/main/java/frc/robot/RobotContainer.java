@@ -60,6 +60,8 @@ public class RobotContainer {
         /* Driver Buttons */
         // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         driver.getSTARTButton().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+
+        driver.getAButton().onTrue(new AprilTagHerder());
     }
 
     /**
