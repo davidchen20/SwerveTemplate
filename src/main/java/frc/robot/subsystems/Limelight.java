@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
   
-  private NetworkTableEntry tv = null;
-  private NetworkTableEntry tx = null;
-  private NetworkTableEntry ty = null;
-  private NetworkTableEntry ta = null;
-  private NetworkTableEntry botpose = null;
-  private NetworkTableEntry targetpose = null;
-  private NetworkTableEntry tl = null;
-  private NetworkTableEntry cl = null;
+  private static NetworkTableEntry tv = null;
+  private static NetworkTableEntry tx = null;
+  private static NetworkTableEntry ty = null;
+  private static NetworkTableEntry ta = null;
+  private static NetworkTableEntry botpose = null;
+  private static NetworkTableEntry targetpose = null;
+  private static NetworkTableEntry tl = null;
+  private static NetworkTableEntry cl = null;
 
   private Alliance alliance = null;
 
@@ -34,53 +34,53 @@ public class Limelight extends SubsystemBase {
     this.alliance = DriverStation.getAlliance();
     try {
       initializedVals = true;
-      this.tv = table.getEntry("tv");
-      this.tx = table.getEntry("tx");
-      this.ty = table.getEntry("ty");
-      this.ta = table.getEntry("ta");
+      Limelight.tv = table.getEntry("tv");
+      Limelight.tx = table.getEntry("tx");
+      Limelight.ty = table.getEntry("ty");
+      Limelight.ta = table.getEntry("ta");
 
       if (alliance.equals(Alliance.Blue)) {
-        this.botpose = table.getEntry("botpose_wpiblue");
+        Limelight.botpose = table.getEntry("botpose_wpiblue");
       } else {
-        this.botpose = table.getEntry("botpose_wpired");
+        Limelight.botpose = table.getEntry("botpose_wpired");
       }
 
-      this.targetpose = table.getEntry("targetpose_robotspace");
-      this.tl = table.getEntry("tl");
-      this.cl = table.getEntry("cl");
+      Limelight.targetpose = table.getEntry("targetpose_robotspace");
+      Limelight.tl = table.getEntry("tl");
+      Limelight.cl = table.getEntry("cl");
 
     } catch (Exception e) {}
   }
 
-  public double getValue() {
+  public static double getValue() {
     return tv.getDouble(0.0);
   }
 
-  public double getX() {
+  public static double getX() {
     return tx.getDouble(0.0);
   }
 
-  public double getY() {
+  public static double getY() {
     return ty.getDouble(0.0);
   }
 
-  public double getA() {
+  public static double getArea() {
     return ta.getDouble(0.0);
   }
 
-  public double[] getBotPose() {
+  public static double[] getBotPose() {
     return botpose.getDoubleArray(new double[7]);
   }
 
-  public double[] getTargetPose() {
+  public static double[] getTargetPose() {
     return targetpose.getDoubleArray(new double[7]);
   }
 
-  public double getTargetLatency() {
+  public static double getTargetLatency() {
     return tl.getDouble(0.0);
   }
 
-  public double getCaptureLatency() {
+  public static double getCaptureLatency() {
     return cl.getDouble(0.0);
   }
 
@@ -90,20 +90,20 @@ public class Limelight extends SubsystemBase {
 
     try {
       initializedVals = true;
-      this.tv = table.getEntry("tv");
-      this.tx = table.getEntry("tx");
-      this.ty = table.getEntry("ty");
-      this.ta = table.getEntry("ta");
+      Limelight.tv = table.getEntry("tv");
+      Limelight.tx = table.getEntry("tx");
+      Limelight.ty = table.getEntry("ty");
+      Limelight.ta = table.getEntry("ta");
 
       if (alliance.equals(Alliance.Blue)) {
-        this.botpose = table.getEntry("botpose_wpiblue");
+        Limelight.botpose = table.getEntry("botpose_wpiblue");
       } else {
-        this.botpose = table.getEntry("botpose_wpired");
+        Limelight.botpose = table.getEntry("botpose_wpired");
       }
 
-      this.targetpose = table.getEntry("targetpose_robotspace");
-      this.tl = table.getEntry("tl");
-      this.cl = table.getEntry("cl");
+      Limelight.targetpose = table.getEntry("targetpose_robotspace");
+      Limelight.tl = table.getEntry("tl");
+      Limelight.cl = table.getEntry("cl");
 
     } catch (Exception e) {}
   }
