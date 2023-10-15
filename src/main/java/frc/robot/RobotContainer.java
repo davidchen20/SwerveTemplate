@@ -61,7 +61,8 @@ public class RobotContainer {
         // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         driver.getSTARTButton().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
 
-        driver.getAButton().onTrue(new AprilTagHerder());
+        // driver.getAButton().onTrue(new AprilTagHerder());
+        driver.getAButton().onTrue(new InstantCommand(() -> s_Swerve.followTrajectoryCommand(s_Swerve.generateTagTrajecotry(), false), s_Swerve));
     }
 
     /**
