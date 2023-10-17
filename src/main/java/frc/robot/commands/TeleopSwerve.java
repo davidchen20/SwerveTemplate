@@ -17,15 +17,10 @@ public class TeleopSwerve extends CommandBase {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
-    private DoubleSupplier limelightX;
-    private DoubleSupplier limelightY;
     private BooleanSupplier robotCentricSup;
-    private BooleanSupplier limelightSupplier;
-    private DoubleSupplier limelightVal;
 
     public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, 
-    DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier limelightSupplier, DoubleSupplier limelightX,
-    DoubleSupplier limelightY, DoubleSupplier limelightVal) {
+    DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
 
@@ -34,12 +29,6 @@ public class TeleopSwerve extends CommandBase {
         this.rotationSup = rotationSup;
         this.robotCentricSup = robotCentricSup;
 
-        this.limelightSupplier = limelightSupplier;
-
-        this.limelightX = limelightX;
-        this.limelightY = limelightY;
-
-        this.limelightVal = limelightVal;
     }
 
     @Override
@@ -52,27 +41,11 @@ public class TeleopSwerve extends CommandBase {
 
 
         /* Drive */
-        if (limelightSupplier.getAsBoolean() && limelightVal.getAsDouble() == 1.0) {
-            
-            // s_Swerve.control(
-            // new Translation2d(Limelight.getTargetPose()[2], -Limelight.getTargetPose()[0]), 
-            // rotationVal, 
-            // false, 
-            // true);
-            s_Swerve.control(
-            new Translation2d(limelightX.getAsDouble(), -limelightY.getAsDouble()), 
-            0, 
-            false, 
-            true);
-            
-        } else {
-            s_Swerve.control(
-                new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-                rotationVal * Constants.Swerve.maxAngularVelocity, 
-                !robotCentricSup.getAsBoolean(), 
-                true
+        s_Swerve.control(
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+            rotationVal * Constants.Swerve.maxAngularVelocity, 
+            !robotCentricSup.getAsBoolean(), 
+            true
             );
-        }
-        
     }
 }
