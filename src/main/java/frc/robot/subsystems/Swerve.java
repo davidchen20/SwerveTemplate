@@ -60,7 +60,8 @@ public class Swerve extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
 
-        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions(), getPose());;
+        // poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions(), getPose());
+        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions(), new Pose2d(new Translation2d(0,0), new Rotation2d(0)));;
     }
 
     public void control(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -82,7 +83,13 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
-    }    
+    }   
+    
+    // public void stop() {
+    //     for (SwerveModule mod : mSwerveMods) {
+    //         mod.setDesiredState(new SwerveModuleState(0, mod.getState().angle), true);
+    //     }
+    // }
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
@@ -180,10 +187,11 @@ public class Swerve extends SubsystemBase {
     //      );
     //  }
     public PathPlannerTrajectory generateTagTrajecotry() {
+
         return PathPlanner.generatePath(
             new PathConstraints(4, 3), 
             new PathPoint(getPose().getTranslation(), getPose().getRotation()),
-            new PathPoint(new Translation2d(Limelight.getTargetPose()[0], Limelight.getTargetPose()[1]), new Rotation2d(Limelight.getTargetPose()[3]))
+            new PathPoint(new Translation2d(Limelight.getTargetPose()[1], Limelight.getTargetPose()[0]), new Rotation2d(Limelight.getTargetPose()[5]))
         );
     }
 
@@ -199,9 +207,9 @@ public class Swerve extends SubsystemBase {
                  traj, 
                  this::getPose, // Pose supplier
                  Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-                 new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                 new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-                 new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                 new PIDController(1, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                 new PIDController(1, 0, 0), // Y controller (usually the same values as X controller)
+                 new PIDController(1, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
                  this::setModuleStates, // Module states consumer
                  true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
                  this // Requires this drive subsystem
@@ -211,6 +219,13 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
+        SmartDashboard.putNumber("Target X", Limelight.getTargetPose()[0]);
+        SmartDashboard.putNumber("Target Y", Limelight.getTargetPose()[1]);
+        SmartDashboard.putNumber("Target Z", Limelight.getTargetPose()[2]);
+        SmartDashboard.putNumber("Target 3", Limelight.getTargetPose()[3]);
+        SmartDashboard.putNumber("Target 4", Limelight.getTargetPose()[4]);
+        SmartDashboard.putNumber("Target Yaw", Limelight.getTargetPose()[5]);
+
         updateOdometry();
         SmartDashboard.putNumber("gyro yaw", gyro.getYaw());
         for(SwerveModule mod : mSwerveMods){

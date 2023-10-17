@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -31,6 +32,7 @@ public class RobotContainer {
     // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
+    private final Limelight limelight = new Limelight();
     private final Swerve s_Swerve = new Swerve();
 
 
@@ -42,7 +44,11 @@ public class RobotContainer {
                 () -> driver.getLeftJoyY(), 
                 () -> -driver.getLeftJoyX(), 
                 () -> -driver.getRightJoyX(), 
-                () -> driver.getLBButton().getAsBoolean()
+                () -> driver.getLBButton().getAsBoolean(),
+                () -> driver.getRBButton().getAsBoolean(),
+                () -> Limelight.getTargetPose()[2],
+                () -> Limelight.getTargetPose()[0],
+                () -> Limelight.getValue()
             )
         );
 
@@ -61,8 +67,17 @@ public class RobotContainer {
         // zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         driver.getSTARTButton().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
 
-        // driver.getAButton().onTrue(new AprilTagHerder());
-        driver.getAButton().onTrue(new InstantCommand(() -> s_Swerve.followTrajectoryCommand(s_Swerve.generateTagTrajecotry(), false), s_Swerve));
+        driver.getAButton().onTrue(new AprilTagHerder());
+        // driver.getAButton().onFalse(new InstantCommand(s_Swerve::stop, s_Swerve));
+        // driver.getAButton().onTrue(new InstantCommand(() -> s_Swerve.control(new Translation2d(Limelight.getTargetPose()[1], Limelight.getTargetPose()[0]), 0, false, false)));
+        // driver.getAButton().whileTrue(new InstantCommand(() -> s_Swerve.control(new Translation2d(100, 10), 1, false, true)));
+        // driver.getAButton().onTrue(new InstantCommand(() -> s_Swerve.followTrajectoryCommand(s_Swerve.generateTagTrajecotry(), false), s_Swerve));
+        // driver.getAButton().whileTrue(new InstantCommand() ->  s_Swerve.control(
+        //     new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+        //     rotationVal * Constants.Swerve.maxAngularVelocity, 
+        //     !robotCentricSup.getAsBoolean(), 
+        //     true
+        // ););
     }
 
     /**

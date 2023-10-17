@@ -23,11 +23,11 @@ import frc.robot.subsystems.Swerve;
 public class TwoTwoSix extends SequentialCommandGroup {
   /** Creates a new TwoTwoSix. */
   public TwoTwoSix(Swerve s_Swerve) {
-    TrajectoryConfig config =
-    new TrajectoryConfig(
-            Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-            Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        .setKinematics(Constants.Swerve.swerveKinematics);
+    // TrajectoryConfig config =
+    // new TrajectoryConfig(
+    //         Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+    //         Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+    //     .setKinematics(Constants.Swerve.swerveKinematics);
         
       var rotationController =
       new PIDController(

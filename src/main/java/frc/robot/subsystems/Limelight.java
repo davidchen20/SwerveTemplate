@@ -49,6 +49,8 @@ public class Limelight extends SubsystemBase {
       Limelight.tl = table.getEntry("tl");
       Limelight.cl = table.getEntry("cl");
 
+      System.out.println(Limelight.tx.getDouble(0));
+
     } catch (Exception e) {}
   }
 
@@ -69,11 +71,11 @@ public class Limelight extends SubsystemBase {
   }
 
   public static double[] getBotPose() {
-    return botpose.getDoubleArray(new double[7]);
+    return botpose.getDoubleArray(new double[6]);
   }
 
   public static double[] getTargetPose() {
-    return targetpose.getDoubleArray(new double[7]);
+    return targetpose.getDoubleArray(new double[6]);
   }
 
   public static double getTargetLatency() {
